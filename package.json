@@ -1,0 +1,30 @@
+{
+	"name": "game-inventory",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"cli": "tsx ./src/cli/index.ts",
+		"build": "tsup"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/FelixRiddle/game-inventory.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"bugs": {
+		"url": "https://github.com/FelixRiddle/game-inventory/issues"
+	},
+	"homepage": "https://github.com/FelixRiddle/game-inventory#readme",
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"@types/yargs": "^17.0.35",
+		"tsup": "^8.5.1",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3",
+		"yargs": "^18.0.0"
+	}
+}
