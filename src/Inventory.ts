@@ -22,4 +22,11 @@ export default class Inventory<T = Slot> {
 	size() {
 		return this.slots.length;
 	}
+
+	/**
+	 * Get item at a given position
+	 */
+	getItem(index: number) {
+		return this.slots[index];
+	}
 }
