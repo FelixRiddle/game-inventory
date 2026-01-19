@@ -28,15 +28,10 @@ export interface IItem {
  *
  * An slot with an item in the inventory.
  */
-export interface ISlot {
+export interface ISlot<T extends IItem> {
 	index: number;
 	quantity: number;
-	item: IItem;
-
-	/**
-	 * Create ISlot
-	 */
-	create(index: number, quantity: number, item: IItem): ISlot;
+	item: T | null;
 
 	/**
 	 * Get index position in an array
@@ -46,18 +41,30 @@ export interface ISlot {
 	getIndex(): number;
 
 	/**
+	 * Check if the slot has an item
+	 */
+	hasItem(): boolean;
+
+	/**
+	 * Check if the slot quantity is at the maximum item capacity
+	 */
+	isFilled(): boolean;
+
+	/**
 	 * Extract
 	 *
-	 * Remove a given quantity of items from the slot.
-	 * Returns the remaining items quantity if there are.
+	 * Extract a given quantity of items from the slot.
+	 * Returns the item and the extracted quantity.
 	 *
-	 * If it's greater than the quantity, convert the slot to undefined and return 0.
+	 * If it's greater than or equal to the quantity, convert the slot to undefined and return
+	 * the item and 0 as quantity.
 	 */
-	extract(q: number): number;
+	extract(q: number): ItemQuantity<T> | null;
 
 	/**
 	 * Add a given quantity of the item
 	 *
+	 * IF the slot is empty returns the given quantity.
 	 * Returns 0 if all items were added.
 	 * Returns > 0 if there were remaining items.
 	 */
@@ -67,16 +74,16 @@ export interface ISlot {
 /**
  * Item quantity
  */
-export interface ItemQuantity {
-	item: IItem;
+export interface ItemQuantity<T extends IItem> {
+	item: T;
 	quantity: number;
 }
 
 /**
  * Game inventory
  */
-export interface IInventory<T> {
-	slots: Array<T | undefined>;
+export interface IInventory<T extends ISlot<U>, U extends IItem> {
+	slots: Array<T>;
 
 	/**
 	 * Get inventory size
@@ -86,7 +93,7 @@ export interface IInventory<T> {
 	/**
 	 * Add slot
 	 */
-	addSlot(object: T | undefined): void;
+	addSlot(object: U | null): void;
 
 	/**
 	 * Resize the inventory
@@ -95,21 +102,21 @@ export interface IInventory<T> {
 	 *
 	 * Returns a list of slots with the remaining elements
 	 */
-	resize(newSize: number): Array<T | undefined>;
+	resize(newSize: number): Array<T | null>;
 
 	/**
 	 * Get item at a given position
 	 */
-	getItem(index: number): T | undefined;
+	getItem(index: number): T | null;
 
 	/**
 	 * Take item
 	 *
 	 * Take item at a given slot index, different than getItem, this removes items from the slot
 	 *
-	 * Returns the item with the taken quantity, if there were no items returns undefined.
+	 * Returns the item with the remaining quantity, if there were no items returns undefined.
 	 */
-	takeItem(index: number, quantity: number): ItemQuantity | undefined;
+	takeItem(index: number, quantity: number): ItemQuantity<U> | null;
 
 	// /**
 	//  * Add item
@@ -135,18 +142,12 @@ export interface IInventory<T> {
 	getItems(): Array<T>;
 
 	/**
-	 * Map
-	 *
-	 * For every element of the inventory run the given function.
-	 * Ignores empty slots.
+	 * Map all slots of the inventory
 	 */
-	map<U>(fn: (item: T, index: number) => U): Array<U>;
+	map<U>(fn: (slot: T, index: number) => U): Array<U>;
 
 	/**
-	 * Filter
-	 *
-	 * Discards undefined items.
-	 * Ignores empty slots.
+	 * Filter slots of the inventory
 	 */
-	filter(fn: (item: T, index: number) => boolean): Array<T>;
+	filter(fn: (slot: T, index: number) => boolean): Array<T>;
 }
