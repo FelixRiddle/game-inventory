@@ -24,15 +24,12 @@ export default class Inventory<U extends IItem>
 	}
 
 	addSlot(object: U | null) {
-		if (object) {
-			// The index is the same as the length
-			const index = this.slots.length;
-			const quantity = 0;
-			const slot = new Slot(index, quantity, object);
+		// The index is the same as the length
+		const index = this.slots.length;
+		const quantity = 0;
+		const slot = new Slot(index, quantity, object);
 
-			this.slots.push(slot);
-		} else {
-		}
+		this.slots.push(slot);
 	}
 
 	resize(newSize: number) {
