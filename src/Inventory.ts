@@ -15,7 +15,7 @@ export default class Inventory<U extends IItem>
 	constructor(inventorySize: number) {
 		// Create the inventory without items
 		for (let i = 0; i < inventorySize; i++) {
-			this.slots.push();
+			this.addSlot(null);
 		}
 	}
 
@@ -43,8 +43,8 @@ export default class Inventory<U extends IItem>
 			this.slots = this.slots.slice(0, newSize);
 		} else if (newSize > this.size()) {
 			// The new size is greater than the current size
-			// Add the remaining slots
-			for (let i = 0; i < newSize; i++) {
+			// To add the remaining slots, start from the slots size
+			for (let i = this.size(); i < newSize; i++) {
 				this.addSlot(null);
 			}
 		}
@@ -53,7 +53,7 @@ export default class Inventory<U extends IItem>
 	}
 
 	getItems(): Array<ISlot<U>> {
-		return this.slots.filter((item) => typeof item !== "undefined");
+		return this.slots.filter((slot) => slot.hasItem());
 	}
 
 	getItem(index: number): ISlot<U> | null {
@@ -138,34 +138,10 @@ export default class Inventory<U extends IItem>
 	}
 
 	map<V>(fn: (slot: ISlot<U>, index: number) => V) {
-		let result = [];
-
-		for (let i = 0; i < this.slots.length; i++) {
-			// Get slot
-			const slot = this.slots[i];
-
-			// Run the function and store the result
-			result.push(fn(slot, i));
-		}
-
-		return result;
+		return this.slots.map(fn);
 	}
 
 	filter(fn: (item: ISlot<U>, index: number) => boolean) {
-		let result = [];
-
-		for (let i = 0; i < this.slots.length; i++) {
-			// Get slot
-			const slot = this.slots[i];
-			if (slot) {
-				// Evaluate
-				const evalResult = fn(slot, i);
-				if (evalResult) {
-					result.push(slot);
-				}
-			}
-		}
-
-		return result;
+		return this.slots.filter(fn);
 	}
 }
