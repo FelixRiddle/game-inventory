@@ -52,6 +52,31 @@ export interface ISlot<T extends IItem> {
 	isFilled(): boolean;
 
 	/**
+	 * Set item
+	 *
+	 * If the item is different, don't do anything
+	 * Returns the remaining quantity
+	 */
+	setItem(item: T, quantity: number): number;
+
+	// /**
+	//  * Swap item
+	//  */
+	// swapItem(item: T, quantity: number): ItemQuantity<T> | null;
+
+	// /**
+	//  * Swap or store
+	//  *
+	//  * Better than swap or set item as it either adds or swaps the item,
+	//  * make sure your cursor has a "temporal store".
+	//  *
+	//  * Pretty much like minecraft's inventory behavior when the user holds an item
+	//  * in the cursor and then clicks on a slot that has either the same item, another
+	//  * item(then swaps) or an empty slot.
+	//  */
+	// swapOrStore(item: T, quantity: number): ItemQuantity<T> | null;
+
+	/**
 	 * Extract
 	 *
 	 * Extract a given quantity of items from the slot.
@@ -119,14 +144,14 @@ export interface IInventory<T extends ISlot<U>, U extends IItem> {
 	 */
 	takeItem(index: number, quantity: number): ItemQuantity<U> | null;
 
-	// /**
-	//  * Add item
-	//  *
-	//  * Add item at the first empty slot or add them to an existing one.
-	//  * If the existing one is filled, add them to the next empty slot.
-	//  * If the inventory is full returns the quantity of items that couldn't be stored.
-	//  */
-	// addItem(item: T, quantity: number): ItemQuantity | undefined;
+	/**
+	 * Add item
+	 *
+	 * Add item at the first empty slot or add them to an existing one.
+	 * If the existing one is filled, add them to the next empty slot.
+	 * If the inventory is full returns the quantity of items that couldn't be stored.
+	 */
+	addItem(item: U, quantity: number): ItemQuantity<U> | undefined;
 
 	// /**
 	//  * Set item

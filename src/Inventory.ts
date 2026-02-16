@@ -76,16 +76,69 @@ export default class Inventory<U extends IItem>
 		return null;
 	}
 
-	// /**
-	//  * Add item
-	//  *
-	//  * Add item at the first empty slot or add them to an existing one.
-	//  * If the existing one is filled, add them to the next empty slot.
-	//  * If the inventory is full returns the quantity of items that couldn't be stored.
-	//  */
-	// addItem(item: T, quantity: number): ItemQuantity | undefined {
+	/**
+	 * Add item
+	 *
+	 * 1. Find slots that have the item
+	 * 2. Fill slots that have the item until all items are drained
+	 * 3. Fill empty slots until all items are drained
+	 * 4. If there's still some remaining return them along with the item
+	 */
+	addItem(item: U, quantity: number): ItemQuantity<U> | undefined {
+		// 1. Find the slots that have the same item
+		const slots = this.getSlotsWithItem(item);
 
-	// }
+		// 2. Try to fill the slots with those items
+		let remaining = quantity;
+		for (const slot of slots) {
+			remaining = slot.add(remaining);
+
+			// Check if the remaining items are zero
+			if (remaining === 0) {
+				// Good, we drained all the items
+				return;
+			}
+		}
+
+		// 3. Fill empty slots until all items are drained
+		const emptySlots = this.getEmptySlots();
+		for (const emptySlot of emptySlots) {
+			// Swap logic is not allowed here
+			remaining = emptySlot.setItem(item, remaining);
+
+			if (remaining === 0) {
+				return;
+			}
+		}
+
+		return {
+			item,
+			quantity: remaining,
+		};
+	}
+
+	/**
+	 * Get empty slots
+	 */
+	getEmptySlots() {
+		return this.filter((slot) => {
+			return !slot.hasItem();
+		});
+	}
+
+	/**
+	 * Get slots that have a given item
+	 */
+	getSlotsWithItem(item: U) {
+		const slots = this.filter((slot) => {
+			if (slot.item?.getId() === item.getId()) {
+				return true;
+			}
+			return false;
+		});
+
+		return slots;
+	}
 
 	map<V>(fn: (slot: ISlot<U>, index: number) => V) {
 		let result = [];
