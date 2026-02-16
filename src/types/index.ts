@@ -59,22 +59,22 @@ export interface ISlot<T extends IItem> {
 	 */
 	setItem(item: T, quantity: number): number;
 
-	// /**
-	//  * Swap item
-	//  */
-	// swapItem(item: T, quantity: number): ItemQuantity<T> | null;
+	/**
+	 * Swap item
+	 */
+	swapItem(item: T, quantity: number): ItemQuantity<T> | null;
 
-	// /**
-	//  * Swap or store
-	//  *
-	//  * Better than swap or set item as it either adds or swaps the item,
-	//  * make sure your cursor has a "temporal store".
-	//  *
-	//  * Pretty much like minecraft's inventory behavior when the user holds an item
-	//  * in the cursor and then clicks on a slot that has either the same item, another
-	//  * item(then swaps) or an empty slot.
-	//  */
-	// swapOrStore(item: T, quantity: number): ItemQuantity<T> | null;
+	/**
+	 * Swap or store
+	 *
+	 * Better than swap or set item as it either adds or swaps the item,
+	 * make sure your cursor has a "temporal store".
+	 *
+	 * Pretty much like minecraft's inventory behavior when the user holds an item
+	 * in the cursor and then clicks on a slot that has either the same item, another
+	 * item(then swaps) or an empty slot.
+	 */
+	swapOrStore(item: T, quantity: number): ItemQuantity<T> | null;
 
 	/**
 	 * Extract
@@ -99,10 +99,19 @@ export interface ISlot<T extends IItem> {
 
 /**
  * Item quantity
+ *
+ * "event" field
+ * What event happened?
+ * "set": The item was set on an empty slot.
+ * "swapped": The item was swapped with the item on the slot.
+ * "merged": The item was merged with the item on the slot.
+ * "rejected": Rejected could happen when swapping an item and the target slot has the same item with full quantity.
+ * Or a "locked" slot(a slot that cannot change the item type).
  */
 export interface ItemQuantity<T extends IItem> {
 	item: T;
 	quantity: number;
+	// event: "set" | "swapped" | "merged" | "rejected";
 }
 
 /**

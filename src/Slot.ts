@@ -1,4 +1,4 @@
-import { IItem, ISlot } from "./types";
+import { IItem, ISlot, ItemQuantity } from "./types";
 
 /**
  * Slot
@@ -78,6 +78,96 @@ export default class Slot<T extends IItem> implements ISlot<T> {
 
 		this.quantity = stored;
 		return remaining;
+	}
+
+	/**
+	 * Swap item
+	 *
+	 * If there's no item, returns null.
+	 * The quantity is checked, in case of it being off the same item is returned
+	 * and nothing is swapped.
+	 */
+	swapItem(item: T, quantity: number): ItemQuantity<T> | null {
+		// Check that the given item has the correct quantity
+		if (item.getStackSize() < quantity) {
+			return {
+				item,
+				quantity,
+			};
+		}
+
+		if (!this.item) {
+			return null;
+		}
+
+		const previousItem: ItemQuantity<T> = {
+			item: this.item,
+			quantity: this.quantity,
+		};
+
+		// Replace current item
+		this.item = item;
+		this.quantity = quantity;
+
+		return previousItem;
+	}
+
+	/**
+	 * Swap or store
+	 *
+	 * Better than swap or set item as it either adds or swaps the item,
+	 * make sure your cursor has a "temporal store".
+	 *
+	 * Pretty much like minecraft's inventory behavior when the user holds an item
+	 * in the cursor and then clicks on a slot that has either the same item, another
+	 * item(then swaps) or an empty slot.
+	 */
+	swapOrStore(item: T, quantity: number) {
+		// Check that the given item has the correct quantity
+		if (item.getStackSize() < quantity) {
+			return {
+				item,
+				quantity,
+			};
+		}
+
+		// Check if the item exists
+		if (!this.item) {
+			// Store it there then
+			this.item = item;
+			this.quantity = quantity;
+
+			return null;
+		}
+
+		// Is the same item?
+		if (this.item.getId() === item.getId()) {
+			// Just add the quantity and return the remaining items
+			const { stored, remaining } = this.getStoredItems(
+				item,
+				this.quantity,
+				quantity
+			);
+
+			// Update the quantity
+			this.quantity = stored;
+
+			return {
+				item,
+				quantity: remaining,
+			};
+		}
+
+		const previousItem: ItemQuantity<T> = {
+			item: this.item,
+			quantity: this.quantity,
+		};
+
+		// Replace current item
+		this.item = item;
+		this.quantity = quantity;
+
+		return previousItem;
 	}
 
 	/**
