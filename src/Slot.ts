@@ -1,4 +1,4 @@
-import { IItem, ISlot, ItemQuantity } from "./types";
+import { IItem, ISlot } from "./types";
 
 /**
  * Slot

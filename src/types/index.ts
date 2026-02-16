@@ -10,6 +10,7 @@ export interface IItem {
 	name: string;
 	description: string;
 	// How many of that item can be stored
+	// This is the limit, like minecraft's common 64 stacks
 	stackSize: number;
 
 	/**
